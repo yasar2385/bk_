@@ -1,3 +1,10 @@
-h1, h2 {
+h1,
+h2 {
   font-family: Lato;
+}
+
+a,
+.uri {
+  color: blue;
+  text-decoration: underline;
 }

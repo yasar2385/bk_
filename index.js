@@ -43,25 +43,41 @@ function SET_ATTR(el, attr_json) {
   }
   return el;
 }
-cloneParent.querySelectorAll('.uri,.email,.ext-link').forEach((link_elm) => {
-  link_elm.querySelectorAll(arr_find).forEach((for_elm) => {
-    console.log([for_elm.tagName, cloneParent.tagName]);
-    console.log(arr_format.includes(cloneParent.tagName));
-    if (
-      for_elm.tagName == cloneParent.tagName &&
-      arr_format.includes(cloneParent.tagName)
-    ) {
-      console.log('aaaa');
-      // need remove/unwrap formatting because
-      for_elm.outerHTML = for_elm.innerHTML;
-    } else {
-      console.log('eee');
-      var cloneNode = for_elm.cloneNode(true);
-      // let inside = for_elm.innerHTML;
-      // console.log(for_elm.outerHTML);
-      //SET_ATTR(for_elm, link_elm.attributes);
-    }
-  });
-});
+var FORMAT_EQ_TEXT = {
+  em: 'italic',
+  strong: 'bold',
+  u: 'underline',
+  s: 'strike',
+  sup: 'superscript',
+  sub: 'subscript',
+};
 
-console.log(cloneParent.outerHTML);
+var arr_find = Object.keys(FORMAT_EQ_TEXT).join(',');
+var arr_format = Object.keys(FORMAT_EQ_TEXT);
+var Link_ELm = cloneParent.querySelector('.uri,.email,.ext-link');
+var format_ELm = Link_ELm ? Link_ELm.querySelector(arr_find) : null;
+if (Link_ELm && format_ELm) {
+  // ? https://stackblitz.com/edit/js-awt7ys?file=index.js
+  if (
+    format_ELm.tagName == cloneParent.tagName &&
+    arr_format.includes(cloneParent.tagName.toLocaleLowerCase())
+  ) {
+    console.log('same as parent');
+    // need remove/unwrap formatting
+    format_ELm.outerHTML = format_ELm.innerHTML;
+  } else {
+    var cloneNode_link = Link_ELm.cloneNode();
+    var cloneNode_for = format_ELm.cloneNode();
+    cloneNode_link.innerHTML = format_ELm.innerHTML;
+    //console.log([cloneNode_link.outerHTML]);
+    var index = Array.prototype.indexOf.call(
+      format_ELm.parentElement.childNodes,
+      format_ELm
+    );
+    Link_ELm.childNodes.forEach(function (elm, idx, arr) {
+      cloneNode_for.appendChild(index == idx ? cloneNode_link : elm);
+    });
+    Link_ELm.replaceWith(cloneNode_for);
+  }
+  //console.log(cloneParent.outerHTML);
+}
